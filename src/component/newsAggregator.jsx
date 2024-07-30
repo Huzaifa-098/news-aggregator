@@ -129,7 +129,7 @@ const NewsAggregator = () => {
   };
 
   const filterArticles = (articles) => {
-    return articles.filter((article) => {
+    const filteredArticles = articles.filter((article) => {
       if (article.source.id === null) {
         return false;
       }
@@ -154,6 +154,12 @@ const NewsAggregator = () => {
 
       return true;
     });
+
+    if (filteredArticles.length === 0) {
+      setError("No entries found.");
+    }
+
+    return filteredArticles;
   };
 
   const fetchNewsAPIArticles = async () => {
