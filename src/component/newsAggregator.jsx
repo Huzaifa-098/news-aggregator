@@ -44,7 +44,7 @@ const NewsAggregator = () => {
   const dateToRef = useRef(null);
   const [guardianPillarName, setGuardianPillarName] = useState([]);
   const [guardianSectionId, setGuardianSectionId] = useState([]);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(true);
 
   const [selectedGuardianTypes, setSelectedGuardianTypes] = useState("all");
   const [selectedGuardianPillarName, setSelectedGuardianPillarName] =
@@ -209,8 +209,8 @@ const NewsAggregator = () => {
   };
 
   const generateDropdownOptions = (array) => {
-    if (!array) {
-      return [{ value: "all", label: "All" }];
+    if (!array || array.length === 0) {
+      return [{ value: "", label: "No records found" }];
     }
 
     const countMap = array.reduce((acc, value) => {
@@ -483,7 +483,6 @@ const NewsAggregator = () => {
 
       <div className="articles-container">
         {loading && <CircularProgress />}
-
         {!loading &&
           currentArticles.map((article, index) => (
             <Grid
@@ -495,41 +494,51 @@ const NewsAggregator = () => {
               className="article-card"
             >
               <div className="card-content">
-                <Typography variant="h6">
-                  {article.webTitle || article.title}
-                </Typography>
-                <img
-                  src={article.fields?.thumbnail || article.urlToImage}
-                  alt={article.webTitle || article.title}
-                />
-                <Typography variant="body2">
-                  {article.fields?.headline || article.description}
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  href={article.webUrl || article.url}
-                  target="_blank"
-                >
-                  Read more
-                </Button>
+                <div className="card-image">
+                  <img
+                    src={article.fields?.thumbnail || article.urlToImage}
+                    alt={article.webTitle || article.title}
+                    className="article-image"
+                  />
+                </div>
+                <div className="card-title">
+                  <Typography variant="h6">
+                    {article.webTitle || article.title}
+                  </Typography>
+                </div>
+
+                <div className="card-description">
+                  <Typography variant="body2">
+                    {article.fields?.headline || article.description}
+                  </Typography>
+                </div>
+                <div className="card-footer">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    href={article.webUrl || article.url}
+                    target="_blank"
+                  >
+                    Read more
+                  </Button>
+                </div>
               </div>
             </Grid>
           ))}
-
-        <div className="pagination">
-          {Array.from(
-            { length: Math.ceil(filteredArticles.length / itemsPerPage) },
-            (_, i) => (
-              <Button key={i + 1} onClick={() => paginate(i + 1)}>
-                {i + 1}
-              </Button>
-            )
-          )}
-        </div>
-        <div className="d-flex">
+      </div>
+      <div className="pagination-container">
+        <div className="d-flex align-items-center justify-content-center mt-3">
+          <Typography variant="body1" sx={{ marginRight: "10px" }}>
+            Showing{" "}
+            {Math.min(
+              (currentPage - 1) * itemsPerPage + 1,
+              filteredArticles.length
+            )}{" "}
+            - {Math.min(currentPage * itemsPerPage, filteredArticles.length)} of{" "}
+            {filteredArticles.length} items
+          </Typography>
           <InputLabel id="items-per-page-label">Items per page</InputLabel>
-          <FormControl margin="normal">
+          <FormControl margin="normal" sx={{ marginLeft: "5px" }}>
             <Select
               labelId="items-per-page-label"
               value={itemsPerPage}
